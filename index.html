@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite Image Collage</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #collage-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200vw;
+        height: 200vh;
+        background-image: url("collage.jpg");
+        background-repeat: repeat;
+        background-size: contain;
+        transform: translate(0, 0);
+        cursor: grab;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="collage-container"></div>
+
+    <script src="https://unpkg.com/@panzoom/panzoom@4.4.0/dist/panzoom.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const collageContainer = document.getElementById("collage-container");
+
+        const panzoom = Panzoom(collageContainer, {
+          maxScale: 3,
+          minScale: 0.5,
+          contain: "outside",
+        });
+
+        collageContainer.addEventListener("wheel", panzoom.zoomWithWheel);
+
+        // Infinite panning effect
+        collageContainer.addEventListener("panzoomchange", (e) => {
+          const transform = panzoom.getTransform();
+          const x = transform[4];
+          const y = transform[5];
+
+          if (x > 500 || x < -500 || y > 500 || y < -500) {
+            panzoom.pan(0, 0, { relative: true });
+          }
+        });
+
+        collageContainer.style.cursor = "grab";
+        collageContainer.addEventListener("mousedown", () => {
+          collageContainer.style.cursor = "grabbing";
+        });
+        collageContainer.addEventListener("mouseup", () => {
+          collageContainer.style.cursor = "grab";
+        });
+      });
+    </script>
+  </body>
+</html>
